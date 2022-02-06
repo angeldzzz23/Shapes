@@ -1,6 +1,6 @@
-# Shapes-Game
+# Shapes
 
-the main goal of this game is to remember the pattern of the shapes.  
+A pattern memorization game that uses shapes to display a pattern and then requires the user to select the order in which the shapes were displayed by the program. At the end, the user can see their score. 
 
 **Preview**
 
