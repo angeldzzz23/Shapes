@@ -34,8 +34,4 @@ the main goal of this game is to remember the pattern of the shapes.
 - [x] Playing the game
 - [x] Seeing results
 
-**Additions**
-There are still some bugs that I havent figured out. For some reason when I create an account, it doesnt log in.
-
-
 
