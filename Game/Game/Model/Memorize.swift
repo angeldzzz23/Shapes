@@ -7,9 +7,7 @@
 
 import Foundation
 
-// TODO: FIX
-// Look for some of the bugs
-// kinda lazy to look
+
 class Memorize {
     
     var rounds: Int = 0
