@@ -7,8 +7,8 @@
 
 import UIKit
 
-
-protocol GameData: class  {
+// used to pass data between view controllers
+protocol GameData: AnyObject  {
     func gameData(memorize: Memorize)
 }
 
@@ -16,11 +16,11 @@ protocol GameData: class  {
 class ViewController: UIViewController {
     
     // rounds label
-   private var firstView = UIView()
+    
+   private var RoundsView = UIView()
    private var numberOfroundsLbl = UILabel() // states how many rounds the user will play
    private var roundsTitleLbl = UILabel() // the title
-   private var segmentedControl = UISegmentedControl() // controls the number of rounds that will be added
-   private var stepper = UIStepper() // TODO:
+   private var stepper = UIStepper()
    private var memorizeButton = UIButton()
    private var resultsButton = UIButton()
     
@@ -49,8 +49,7 @@ class ViewController: UIViewController {
     // MARK: button actions
     @objc func memorizeButtonWasPressed() {
         
-        print(memorizeGame.rounds)
-        if memorizeGame.rounds > 0 {
+        if memorizeGame.totalRounds > 0 {
             // reset game
             memorizeGame.reset()
             // start the game
@@ -78,25 +77,27 @@ class ViewController: UIViewController {
     // MARK: set up the views
     
     func setUpViews() {
-        firstView.backgroundColor = UIColor(red: 45/255, green: 41/255, blue: 251/255, alpha: 1)
-        firstView.layer.cornerRadius = 25
-        firstView.addShadow2(offset: CGSize(width: 2, height: 2), color: UIColor.black, radius: 2, opacity: 0.35)
-        firstView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(firstView)
+        RoundsView.backgroundColor = UIColor(red: 45/255, green: 41/255, blue: 251/255, alpha: 1)
+        RoundsView.layer.cornerRadius = 25
+        RoundsView.addShadow(offset: CGSize(width: 2, height: 2), color: UIColor.black, radius: 2, opacity: 0.35)
+        RoundsView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(RoundsView)
         
         
         // adding subview
         numberOfroundsLbl.update(text: "1", textAlignment: .center, font: UIFont.boldSystemFont(ofSize: 120), color: .white)
         view.addSubview(numberOfroundsLbl)
         
+        // creating the results title lbael
         roundsTitleLbl.update(text: "ROUNDS", textAlignment: .center, font: UIFont.boldSystemFont(ofSize: 30), color: .white)
         view.addSubview(roundsTitleLbl)
      
+        // creating memorize button
         memorizeButton.setTitle("Memorize >", for: .normal)
         memorizeButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20) // sets the size of the font
         memorizeButton.layer.cornerRadius = 24
         memorizeButton.backgroundColor = UIColor(red: 45/255, green: 41/255, blue: 251/255, alpha: 1)
-        memorizeButton.addShadow2(offset: CGSize(width: 2, height: 2), color: UIColor.black, radius: 2, opacity: 0.35)
+        memorizeButton.addShadow(offset: CGSize(width: 2, height: 2), color: UIColor.black, radius: 2, opacity: 0.35)
         
         memorizeButton.addTarget(self, action: #selector(memorizeButtonWasPressed), for: .touchUpInside)
         memorizeButton.translatesAutoresizingMaskIntoConstraints = false
@@ -119,13 +120,14 @@ class ViewController: UIViewController {
         stepper.layer.cornerRadius = 10
         view.addSubview(stepper)
         
-        memorizeGame.rounds = Int(stepper.value)
+        memorizeGame.totalRounds = Int(stepper.value)
         numberOfroundsLbl.text = String(Int(stepper.value))
     }
     
+    // modifies the game rounds and our rounds label
     @objc func stepperWasPressed() {
-        memorizeGame.rounds = Int(stepper.value)
-        numberOfroundsLbl.text = String(memorizeGame.rounds)
+        memorizeGame.totalRounds = Int(stepper.value)
+        numberOfroundsLbl.text = String(memorizeGame.totalRounds)
     }
     
     
@@ -133,35 +135,35 @@ class ViewController: UIViewController {
         
         // first view
         NSLayoutConstraint.activate([
-            firstView.topAnchor.constraint(equalTo: view.topAnchor, constant: 107),
-            firstView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 17),
-            firstView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -17),
-            firstView.heightAnchor.constraint(equalToConstant: 360)
+            RoundsView.topAnchor.constraint(equalTo: view.topAnchor, constant: 107),
+            RoundsView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 17),
+            RoundsView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -17),
+            RoundsView.heightAnchor.constraint(equalToConstant: 360)
         ])
         
         // constraints for the number of rounds label
         NSLayoutConstraint.activate([
-            numberOfroundsLbl.topAnchor.constraint(equalTo: firstView.topAnchor, constant: 59),
-            numberOfroundsLbl.centerXAnchor.constraint(equalTo: firstView.centerXAnchor)
+            numberOfroundsLbl.topAnchor.constraint(equalTo: RoundsView.topAnchor, constant: 59),
+            numberOfroundsLbl.centerXAnchor.constraint(equalTo: RoundsView.centerXAnchor)
         ])
         
         // constraints for rounds title Lbls
         NSLayoutConstraint.activate([
             roundsTitleLbl.topAnchor.constraint(equalTo: numberOfroundsLbl.bottomAnchor, constant: 9),
-            roundsTitleLbl.centerXAnchor.constraint(equalTo: firstView.centerXAnchor)
+            roundsTitleLbl.centerXAnchor.constraint(equalTo: RoundsView.centerXAnchor)
         ])
         
         // constraints for segmented control
         NSLayoutConstraint.activate([
             stepper.topAnchor.constraint(equalTo: roundsTitleLbl.bottomAnchor, constant: 25),
-            stepper.centerXAnchor.constraint(equalTo: firstView.centerXAnchor),
+            stepper.centerXAnchor.constraint(equalTo: RoundsView.centerXAnchor),
             stepper.widthAnchor.constraint(equalToConstant: 100)
         
         ])
         
         // the constraints for the memorize button
         NSLayoutConstraint.activate([
-            memorizeButton.topAnchor.constraint(equalTo: firstView.bottomAnchor, constant: 121),
+            memorizeButton.topAnchor.constraint(equalTo: RoundsView.bottomAnchor, constant: 121),
             memorizeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 38),
             memorizeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -38),
             memorizeButton.heightAnchor.constraint(equalToConstant: 100)
@@ -184,12 +186,14 @@ extension UILabel {
         self.font = font
         self.translatesAutoresizingMaskIntoConstraints = false
         self.textColor = color
+        
     }
     
 }
 
+
 extension UIView {
-    func addShadow2(offset: CGSize, color: UIColor, radius: CGFloat, opacity: Float) {
+    func addShadow(offset: CGSize, color: UIColor, radius: CGFloat, opacity: Float) {
         layer.masksToBounds = false
         layer.cornerRadius = 24
         layer.borderColor = UIColor.clear.cgColor
@@ -201,9 +205,9 @@ extension UIView {
 }
 
 
+// implementation of GameData
 extension ViewController: GameData {
     func gameData(memorize: Memorize) {
         self.memorizeGame = memorize
-        print(memorize.desc)
     }
 }

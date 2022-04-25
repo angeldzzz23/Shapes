@@ -10,61 +10,70 @@ import Foundation
 
 class Memorize {
     
-    var rounds: Int = 0
-    ///
+    // MARK: Properties
+    var totalRounds: Int = 0
+    
     var currentRound: Int = 1
     /// the amount of shapes remembered
-    var shapesRembered: Int = 0;
-    /// the description being shown to the user
-    var desc = "Play a game"
-    private var gameHasStarter = false
+    private var shapesRembered: Int = 0;
+    /// the description of the status of the game
+    /// if no game has been played, then we use our default play a game description
+    var gameDescription = "Play a game"
     /// the shapes randomly chosen
     var compGenshapes = [shape]()
     /// the shapes the user pressed
     var userChosenShapes = [shape]()
     
+    
+    // MARK: initializers
     init(rounds: Int) {
-        self.rounds = rounds
+        self.totalRounds = rounds
     }
     
     init() { }
 
+    
+    // MARK: Important methods
+    
+    /// this resests the entirety of the game
     func reset() {
-            currentRound = 1
-            shapesRembered = 0
-            compGenshapes.removeAll() // remove all of the dates
-            userChosenShapes.removeAll() // remove all of the arrays
-            desc = "Play a game"
+        currentRound = 1
+        shapesRembered = 0
+        compGenshapes.removeAll() // remove all of the dates
+        userChosenShapes.removeAll() // remove all of the arrays
+        gameDescription = "Play a game"
     }
 
     
     func startGame() {
-        // initialize the shapes
+        // gets all of the shapes
         let shpes = shape.getShapes()
         // you get the shapes from the user
-        for _ in 0..<rounds {
+        for _ in 0..<totalRounds {
             let randomInt = Int(arc4random_uniform(4))
             compGenshapes.append(shpes[randomInt])
         }
+        
        // shuffles the array
         compGenshapes.shuffle()
     }
     
-    
+    // enters a new shape by the user
     func enter(shape: shape) {
-        if userChosenShapes.count < rounds {
+        
+        if userChosenShapes.count < totalRounds {
             userChosenShapes.append(shape)
             currentRound += 1
         } else{
             print("you cannot add more cards")
+            exit(-1)
         }
-        
-        print(currentRound)
     }
     
+    // finalizes the end of the game by getting the total matches of the user
     func endGame() {
-        
-        if rounds == userChosenShapes.count {
+        if totalRounds == userChosenShapes.count {
+            // check how many matches the user obtained
             for i in 0..<userChosenShapes.count {
                 for j in 0..<compGenshapes.count {
                     if userChosenShapes[i] == compGenshapes[j] && (i == j) {
@@ -72,7 +81,8 @@ class Memorize {
                     }
                 }
             }
-            desc = getDescription()
+            // gets the final game description
+            gameDescription = getDescription()
         } else {
             print("error: they need to be the same")
         }
@@ -82,8 +92,9 @@ class Memorize {
         return compGenshapes
     }
     
+    
     private func getDescription() -> String {
-        return "You remembered \(shapesRembered) out of \(rounds)"
+        return "You remembered \(shapesRembered) out of \(totalRounds)"
     }
     
 }

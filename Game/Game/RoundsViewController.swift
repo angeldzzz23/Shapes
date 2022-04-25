@@ -7,27 +7,28 @@
 
 import UIKit
 
-
-
-
+// this is the viewcontroller that is charge of presenting each round
 class RoundsViewController: UIViewController {
 
+    // MARK: propertiees
     var stackViewHorizontal = UIStackView()
-    var secndHorzntlSV = UIStackView()
+    var secondHorizontalStackview = UIStackView()
     var nextButton = UIButton()
     var symbolOne = UIButton()
     var symbolTwo = UIButton()
     var symbolThree = UIButton()
     var symboldFour = UIButton()
     
+    
     lazy var buttons = [symbolOne,symbolTwo,symbolThree, symboldFour]
+    // allows us to convert to the button to a specific shape
     lazy var buttonToShape = [symbolOne: shape.square,symbolTwo: shape.circle,symbolThree: shape.triangle,symboldFour: shape.star]
+    // allows us to  reference a shape to a specific button
     lazy var ShapeToButton = [shape.square : symbolOne,shape.circle : symbolTwo,shape.triangle : symbolThree,shape.star : symboldFour]
 
     // delegate game data back
     weak var delegate: GameData?
 
-    
     var game  = Memorize()
     var shapesToShowToTheUser = [shape]()
     
@@ -50,10 +51,10 @@ class RoundsViewController: UIViewController {
         setUpViews()
         setUpConstraints()
         shapesToShowToTheUser = game.getRandomShapes()
-        print(game.compGenshapes)
-        print(game.userChosenShapes)
         
         
+        
+        // gets the first shape to display to the user
         ShapeToButton[shapesToShowToTheUser.removeFirst()]?.backgroundColor = UIColor(red: 45/255, green: 41/255, blue: 251/255, alpha: 0.5)
         
     }
@@ -69,19 +70,21 @@ class RoundsViewController: UIViewController {
         button.backgroundColor = UIColor(red: 45/255, green: 41/255, blue: 251/255, alpha: 0.5)
     }
     
-    
+    // this is called when presenting the shjapes the user has to remember
     @objc func nextButtonWasPresssed(with button: UIButton) {
+        // make sure that we still have enough shapes
         if shapesToShowToTheUser.count > 0 {
-          
+          // choose a new shape
             buttons.forEach({$0.backgroundColor = .clear})
             ShapeToButton[shapesToShowToTheUser.removeFirst()]?.backgroundColor = UIColor(red: 45/255, green: 41/255, blue: 251/255, alpha: 0.5)
            
         }
         else if shapesToShowToTheUser.count == 0 {
-            // ask user to start
+            // ask user to start the actual entering of shapes
             buttons.forEach({$0.backgroundColor = .clear})
             buttons.forEach({$0.isEnabled = false})
             nextButton.setTitle("Start", for: .normal)
+            // change the targets
             nextButton.removeTarget(self, action: #selector(nextButtonWasPresssed), for: .touchUpInside)
             nextButton.addTarget(self, action: #selector(startButtonWasPressed), for: .touchUpInside)
             
@@ -89,21 +92,21 @@ class RoundsViewController: UIViewController {
         
     }
     
-    
+    // this is called whenever the user decides to start entering shapes
     @objc func startButtonWasPressed() {
-        print("start button was pressed")
+        
         buttons.forEach({$0.isEnabled = true})
         nextButton.setTitle("Next", for: .normal)
+        // changing targets
         nextButton.removeTarget(self, action: #selector(startButtonWasPressed), for: .touchUpInside)
         nextButton.addTarget(self, action: #selector(newNextButtonWasPressed), for: .touchUpInside)
         title = "Round \(String(game.currentRound))"
     }
     
 
-    
+    // this is called when the user is entering shapaes
     @objc func newNextButtonWasPressed() {
-        print("here")
-        print(game.currentRound)
+        
         
         if let selectedButton = buttons.first(where: {$0.isSelected}) {
             game.enter(shape: buttonToShape[selectedButton]!)
@@ -121,11 +124,13 @@ class RoundsViewController: UIViewController {
         
         
         
-        if game.rounds == game.userChosenShapes.count {
+        if game.totalRounds == game.userChosenShapes.count {
+            // reset everything
             buttons.forEach({$0.isSelected = false; $0.backgroundColor = .clear; $0.isEnabled = false})
             nextButton.removeTarget(self, action: #selector(newNextButtonWasPressed), for: .touchUpInside)
             nextButton.addTarget(self, action: #selector(finishGameButtonIsPressed), for: .touchUpInside)
             nextButton.setTitle("Finish", for: .normal)
+            // delegate my data back
             delegate?.gameData(memorize: game) // pass the game data on to the new viewcontroller
             
         } else {
@@ -135,6 +140,7 @@ class RoundsViewController: UIViewController {
        
     }
     
+    // this is called when my finish game is pressed
     @objc func finishGameButtonIsPressed(){
         // get the results 
         game.endGame()
@@ -177,16 +183,16 @@ class RoundsViewController: UIViewController {
         
         self.view.addSubview(stackViewHorizontal)
         
-        secndHorzntlSV = UIStackView(arrangedSubviews: [symbolThree, symboldFour])
-        secndHorzntlSV.update(axis: .horizontal, distribution: .equalSpacing, alignment: .center, color: .clear)
-        self.view.addSubview(secndHorzntlSV)
+        secondHorizontalStackview = UIStackView(arrangedSubviews: [symbolThree, symboldFour])
+        secondHorizontalStackview.update(axis: .horizontal, distribution: .equalSpacing, alignment: .center, color: .clear)
+        self.view.addSubview(secondHorizontalStackview)
         
         nextButton.setTitle("Next >", for: .normal)
         nextButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20) // sets the size of the font
         nextButton.layer.cornerRadius = 24
         nextButton.addTarget(self, action: #selector(nextButtonWasPresssed), for: .touchUpInside)
         nextButton.backgroundColor = UIColor(red: 45/255, green: 41/255, blue: 251/255, alpha: 1)
-        nextButton.addShadow2(offset: CGSize(width: 2, height: 2), color: UIColor.black, radius: 2, opacity: 0.35)
+        nextButton.addShadow(offset: CGSize(width: 2, height: 2), color: UIColor.black, radius: 2, opacity: 0.35)
         nextButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nextButton) // adds the subview
         
@@ -218,12 +224,13 @@ class RoundsViewController: UIViewController {
             stackViewHorizontal.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25)
         ])
         
+        
         NSLayoutConstraint.activate([
-            secndHorzntlSV.topAnchor.constraint(equalTo: stackViewHorizontal.bottomAnchor, constant: 110),
-            secndHorzntlSV.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            secndHorzntlSV.heightAnchor.constraint(equalToConstant: 150),
-            secndHorzntlSV.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
-            secndHorzntlSV.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25)
+            secondHorizontalStackview.topAnchor.constraint(equalTo: stackViewHorizontal.bottomAnchor, constant: 110),
+            secondHorizontalStackview.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            secondHorizontalStackview.heightAnchor.constraint(equalToConstant: 150),
+            secondHorizontalStackview.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
+            secondHorizontalStackview.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25)
         ])
         
         NSLayoutConstraint.activate([

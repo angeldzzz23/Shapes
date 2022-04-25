@@ -59,7 +59,7 @@ class ResultsViewController: UIViewController {
         resultstitleLbl.update(text: "Results", textAlignment: .center, font: UIFont.boldSystemFont(ofSize: 14), color: .white)
         view.addSubview(resultstitleLbl)
         
-        gameDesc.update(text: game.desc, textAlignment: .center, font: UIFont.systemFont(ofSize: 12), color: .white)
+        gameDesc.update(text: game.gameDescription, textAlignment: .center, font: UIFont.systemFont(ofSize: 12), color: .white)
         view.addSubview(gameDesc)
         
     }
